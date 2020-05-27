@@ -33,16 +33,24 @@
   color: #61dafb;
 }
 .grid{
-    
+    width:200px; 
     
     display: grid;
     grid-template-columns: repeat(10, 20px);
 
 }
 .grid-cell {
-    border: 1px solid gray;
-
+    border: 1px dotted black;
+    height:20px;
+  
     
+
+   
+    
+    background-color:lightgray;
+}
+.grid-cell-alive {
+    background-color:green;
 }
 
 @keyframes App-logo-spin {
