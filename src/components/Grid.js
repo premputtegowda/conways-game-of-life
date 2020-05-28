@@ -7,10 +7,10 @@ function Grid() {
     const [randomGen, setRandomGen] = useState(false)
     const [size, setSize] = useState({xDimension:10, yDimension:10})
     const [speed, setSpeed] = useState(5)
+    const [stopAlgo,setStopAlgo] = useState(false)
     const intervalRef = useRef(null);
-    console.log('state', grid)
-    console.log("x", size.xDimension)
-    console.log("y", size.yDimension)
+    
+
     function arrayMaker() {
       let xArr = []
       for(let x=0; x < Number(size.xDimension); x++ ){
@@ -26,14 +26,30 @@ function Grid() {
       }
       setGrid([...xArr])
     }
+
+
   useEffect(()=>{
-  arrayMaker();
+    arrayMaker();
   },[size.xDimension, size.yDimension, randomGen])
+
+  useEffect(() => {
+    if (stopAlgo===true){
+
+        stop()
+
+    }
+    if( go !== 0 ){
+        algo()
+    } 
+  }, [go,stopAlgo, speed])
+
     function algo() {
+        let flag = true
         let clone = []
         clone = JSON.parse(JSON.stringify(grid));
-      //  console.log('grid', grid)
-      //  console.log('this is clone',clone)
+       
+
+      
       for (let x = 0; x < size.xDimension; x++) {
         for (let y = 0; y < size.yDimension; y++) {
           let checks2 = [
@@ -62,38 +78,39 @@ function Grid() {
               (size.yDimension + (y + 1)) % size.yDimension
             ],
           ];
-          // checks2.forEach(r => console.log("value: ", r))
+          
           let count = checks2.reduce((acc, curr) => acc + curr);
           // if the current grid value = 1 and count = 2 or 3 don't do anything
           // if the current gird value =1 and the count > 3 or  < 2 change the value to 0
           // if current grid value is 0 and the count == 3 then change the value 1
           if (grid[x][y] === 1 && (count > 3 || count < 2)) {
             clone[x][y] = 0;
+            flag = false;
             // console.log("this is true 1", clone[x][y] === grid[x][y])
           } else if (grid[x][y] === 0 && count === 3) {
             clone[x][y] = 1;
-            // console.log("this is true 2", clone[x][y] === grid[x][y])
+            flag = false;
           }
-          else console.log('');
+          else {
+              clone[x][y] = grid[x][y]
+          };
         }
+        
       }
-      console.log(grid)
-      setGrid((grid) =>  grid = JSON.parse(JSON.stringify(clone)));
+        setStopAlgo(flag);
+        
+    
+         setGrid([...clone])
     }
-    useEffect(() => {
-      if( go === 0){
-        console.log('zero')
-      } else {
-        algo()
-      }
-    }, [go])
+    
     const start = () => {
       if (intervalRef.current !== null) {
         return;
       }
       intervalRef.current = setInterval(() =>{
         setGo(go => go + 1);
-      }, speed*200);
+        
+      },  speed*200);
     };
     const stop = () => {
       if (intervalRef.current === null) {
@@ -102,6 +119,16 @@ function Grid() {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     };
+
+    const reset = () => {
+        stop();
+        setGo(0);
+        setRandomGen(false)
+        setStopAlgo(false)
+        arrayMaker()
+        
+    
+    }
     function handleChange(e){
       e.preventDefault()
       setSize({...size,[e.target.name]:Number(e.target.value)})
@@ -110,30 +137,47 @@ function Grid() {
       e.preventDefault()
       setSpeed(e.target.value)
       stop()
-      start()
+     
+     if(go !== 0){
+         start()
+     }
+      
     }
     console.log('random', randomGen)
     return (
-      <>
-        <button onClick={start}>Start</button>
-        <button onClick={stop}> Stop </button>
-        <button onClick={() => setRandomGen(!randomGen)}
-        >Random</button>
+      <div className='grid-container'>
+        <div className="btn">
+            <button onClick={start} disabled={stopAlgo}>Start</button>
+            <button onClick={stop} disabled={stopAlgo}> Stop </button>
+            <button onClick={reset}> Clear </button>
+            <button onClick={() => setRandomGen(!randomGen)}
+            disabled={stopAlgo}>Random</button>
+
+        </div>
+        <div className="slider-container" >
+            <label> Speed: {speed*200} milli seconds
+            <input className='slider'name="speed" type="range" min="1" max="10"  value={speed} onChange={handleSpeed} />
+            </label>
+        </div>
+        
         <form>
           <div>
-            <div>
-            <input name="speed" type="range" min="1" max="10" step="1" value={speed} onChange={handleSpeed} />
-          </div>
+            
             <label>
-            xDimension:
+            Rows:
               <input type="text" value={size.xDimension} name='xDimension' onChange={handleChange} />
               </label>
               <label>
-              yDimension:
+              Columns:
               <input type="text" value={size.yDimension} name='yDimension' onChange={handleChange} />
               </label>
             </div>
         </form>
+        <div > <span className='generations'>Generations:</span> {stopAlgo ? go-1: go} </div>       
+        <div className='warning'>{stopAlgo ? "All cells stopped reproducing or died. Please clear and start over":""}</div>
+            
+     
+        
         <div className="grid" style={{ gridTemplateColumns: `repeat(${size.yDimension}, 20px)`}} >
           {grid.map((x, ind1) =>
             x.map((y, ind2) => (
@@ -153,8 +197,10 @@ function Grid() {
               />
             ))
           )}
+          
+          
         </div>
-      </>
+    </div>  
     );
 }
 
