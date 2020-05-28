@@ -30,6 +30,7 @@ function Grid() {
 
   useEffect(()=>{
     arrayMaker();
+    
   },[size.xDimension, size.yDimension, randomGen])
 
   useEffect(() => {
@@ -150,7 +151,13 @@ function Grid() {
             <button onClick={start} disabled={stopAlgo}>Start</button>
             <button onClick={stop} disabled={stopAlgo}> Stop </button>
             <button onClick={reset}> Clear </button>
-            <button onClick={() => setRandomGen(!randomGen)}
+            <button onClick={() => 
+            {
+               
+                setRandomGen(true)
+                
+            }
+        }
             disabled={stopAlgo}>Random</button>
 
         </div>
@@ -188,12 +195,7 @@ function Grid() {
                   newGrid[ind1][ind2] = grid[ind1][ind2] ? 0 : 1;
                   setGrid(newGrid);
                 }}
-                style={{
-                  width: 20,
-                  height: 20,
-                  backgroundColor: grid[ind1][ind2] === 1 ? "blue" : "green",
-                  border: "solid 1px black",
-                }}
+                className = {`grid-cell${grid[ind1][ind2] === 1 ? ' grid-cell-alive':''}`}
               />
             ))
           )}
