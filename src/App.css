@@ -112,18 +112,33 @@ input[type=text]{
     
     display: grid;
     /* grid-template-columns: repeat(10, 20px); */
+    grid-template-columns: repeat(var(--cols), calc( (100vw - 100px) / var(--cols)));
 
 }
 .grid-cell {
     border: 1px dotted black;
-    height:20px;
-  
-    
-
-   
+    height:calc((100vw - 100px) / (var(--cols)));
     
     background-color:lightgray;
 }
+
+/* @media screen and (max-width: 500px) {
+    .grid-cell {
+      height:calc(500 / var(--cols));
+    }
+    .grid{
+        grid-template-columns: repeat(var(--cols), calc(500 / var(--cols)));
+    }
+  }
+
+  @media screen and (max-width: 800px) {
+    .grid-cell {
+      height:calc(1200 / var(--cols));
+    }
+    .grid{
+        grid-template-columns: repeat(var(--cols), 15px);
+    }
+  } */
 .grid-cell-alive {
     background-color:green;
 }

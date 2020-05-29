@@ -5,7 +5,7 @@ function Grid() {
     const [grid, setGrid] = useState([]);
     const [go, setGo] = useState(0)
     const [randomGen, setRandomGen] = useState(false)
-    const [size, setSize] = useState({xDimension:10, yDimension:10})
+    const [size, setSize] = useState({xDimension:10, yDimension:10, })
     const [speed, setSpeed] = useState(5)
     const [stopAlgo,setStopAlgo] = useState(false)
     const intervalRef = useRef(null);
@@ -178,6 +178,7 @@ function Grid() {
               Columns:
               <input type="text" value={size.yDimension} name='yDimension' onChange={handleChange} />
               </label>
+              
             </div>
         </form>
         <div > <span className='generations'>Generations:</span> {stopAlgo ? go-1: go} </div>       
@@ -185,7 +186,10 @@ function Grid() {
             
      
         
-        <div className="grid" style={{ gridTemplateColumns: `repeat(${size.yDimension}, 20px)`}} >
+        <div className="grid" 
+        style = {{"--cols":`${size.yDimension}`}}
+        
+        >
           {grid.map((x, ind1) =>
             x.map((y, ind2) => (
               <div
@@ -196,6 +200,7 @@ function Grid() {
                   setGrid(newGrid);
                 }}
                 className = {`grid-cell${grid[ind1][ind2] === 1 ? ' grid-cell-alive':''}`}
+                style={{"--cols":`${size.yDimension}`}}
               />
             ))
           )}
